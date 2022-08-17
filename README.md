@@ -4,4 +4,4 @@
 
 by [@StephenSHorton](https://github.com/StephenSHorton)
 
-[![DALL·E 2022-08-14 08 02 33 - Magical heroes defending a castle that has two bridges connecting to it](https://user-images.githubusercontent.com/54323940/184547413-5806e8c7-3492-4744-9042-00b1f29c0380.png)](https://labs.openai.com/s/RJbj6cIqzr2vP1febPg3U9Um)
+[![DALL·E 2022-08-17 17 15 50 - A battle game where your units automatically battle the enemy in groups](https://user-images.githubusercontent.com/54323940/185259767-de999161-1dbb-4197-a66b-698188fe74ea.png)](https://labs.openai.com/s/janbgklVMVRpgQVJEao75OMm)
