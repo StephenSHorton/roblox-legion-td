@@ -29,18 +29,10 @@ export class AIController extends BaseComponent<Attributes> implements OnTick {
    * TODO is it better to locate targets by proximity instead of the whole workspace? (might be the same amount of work just scanning the workspace AND by distance)
    */
   findTarget() {
-    for (const i of game.Workspace.GetChildren()) {
-      //skip if not a model
-      if (!i.IsA("Model")) continue
-      //skip if is self
-      if (i === this.instance) continue
-      //check if the targetTag is found on that model
-      const tags = CollectionService.GetTags(i)
-      if (!tags.includes(this.attributes.targetTag)) continue
-      //if so, set the target
-      this.target = i
-      this.pursueTarget(i)
-    }
+    const Roger111 = game.Workspace.FindFirstChild("Roger111") as Model | undefined
+    if (!Roger111) return
+    this.target = Roger111
+      this.pursueTarget(Roger111)
   }
 
   private waypoints: PathWaypoint[] = []
@@ -64,7 +56,8 @@ export class AIController extends BaseComponent<Attributes> implements OnTick {
 
     //create path
     const path = PathfindingService.CreatePath({
-      //TODO configure height and radius
+      AgentHeight: 4,
+      AgentRadius: 3,
       AgentCanJump: false,
     })
     //compute path
