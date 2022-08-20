@@ -8,15 +8,17 @@ import { OnStart } from "@flamework/core";
 @Component({
   tag: "Map"
 })
-export class AIController extends BaseComponent implements OnStart {
+export class Map extends BaseComponent implements OnStart {
   onStart(): void {
-    print("START")
+    this.hideWaypoints()
+  }
+
+  private hideWaypoints() {
     const waypointsGroup = this.instance.FindFirstChild("Waypoints")
-    if (!waypointsGroup) return
+    if (!waypointsGroup) return warn("Map waypoints not found")
     const waypoints = waypointsGroup.GetChildren()
-    waypoints.forEach(waypoint => {
-      if (!waypoint.IsA("Part")) return
-      waypoint.Transparency = 0
+    waypoints.filter((waypoint): waypoint is Part => 'Transparency' in waypoint).forEach(waypoint => {
+      waypoint.Transparency = 1
       const children = waypoint.GetChildren()
       children.forEach(child => {
         child.Destroy()

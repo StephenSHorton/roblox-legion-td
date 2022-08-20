@@ -1,5 +1,5 @@
 import { BaseComponent, Component } from "@flamework/components";
-import { OnStart } from "@flamework/core";
+import { OnTick } from "@flamework/core";
 import Make from "@rbxts/make";
 
 const PathfindingService = game.GetService("PathfindingService")
@@ -12,37 +12,27 @@ const PathfindingService = game.GetService("PathfindingService")
 @Component({
   tag: "AI"
 })
-export class AIController extends BaseComponent implements OnStart {
+export class AIController extends BaseComponent implements OnTick {
+  public waypointList?: Vector3[]
+  private nextWayPointIndex = 0
+  private isPathing = false
   private target?: Model
-
-  onStart(): void {
-    //TODO find
-    this.initMode('Sentry')
-  }
-
-
-  initMode(mode: 'Sentry' | 'Attack' | 'Travel') {
-    switch (mode) {
-      // TODO implement sentry mode
-      // case 'Sentry': // for AI that defend the lanes
-      //   sentryMode()
-      //   break
-      case 'Attack': // for AI that attack the king
-        this.attackMode()
-        break
-    }
-  }
-
-  attackMode() {
-    throw warn("AIController.attackMode() not implemented.");
-  }
-  
-  private waypoints: PathWaypoint[] = []
-  private nextWaypointIndex = 1
   private reachedConnection?: RBXScriptConnection
   private blockedConnection?: RBXScriptConnection
 
+  onTick(): void {
+    if (this.isPathing) return
+    if (this.waypointList && this.nextWayPointIndex < this.waypointList.size()) {
+      this.pathTo(this.waypointList[this.nextWayPointIndex])
+      this.nextWayPointIndex++
+    }
+  }
+
   pathTo(goal: Vector3) {
+    this.isPathing = true
+    if (this.target && this.target.PrimaryPart) {
+      goal = this.target.PrimaryPart.Position
+    }
     //instance validation
     if (!this.instance.IsA("Model")) {
       throw error("AIController must be attached to a Model")
@@ -64,16 +54,16 @@ export class AIController extends BaseComponent implements OnStart {
     path.ComputeAsync(this.instance.PrimaryPart.Position, goal)
     //if not successful path, clear target
     if (path.Status !== Enum.PathStatus.Success) return this.clearTargetPath([], humanoid)
-
-    this.waypoints = path.GetWaypoints()
-    this.waypoints.shift()
-    const drawnPath = this.drawPath(this.waypoints)
+    let nextWaypointIndex = 1
+    const waypoints = path.GetWaypoints()
+    waypoints.shift()
+    const drawnPath = this.drawPath(waypoints)
     drawnPath[0].BrickColor = new BrickColor("Really blue")
 
     //setup blocked connection
     this.blockedConnection = path.Blocked.Connect((blockedWaypointIndex) => {
       //check if the obstacle is further down the path
-      if (blockedWaypointIndex >= this.nextWaypointIndex) {
+      if (blockedWaypointIndex >= nextWaypointIndex) {
         return this.clearTargetPath(drawnPath, humanoid)
       }
     })
@@ -81,12 +71,12 @@ export class AIController extends BaseComponent implements OnStart {
     //detect when movement to next waypoint is complete
     if (!this.reachedConnection) {
       this.reachedConnection = humanoid.MoveToFinished.Connect((reached) => {
-        if (reached && this.nextWaypointIndex < this.waypoints.size() - 1) {
+        if (reached && nextWaypointIndex < waypoints.size() - 1) {
           //increase waypoint index and move to next waypoint
-          drawnPath[this.nextWaypointIndex].Destroy()
-          this.nextWaypointIndex++
-          drawnPath[this.nextWaypointIndex].BrickColor = new BrickColor("Lime green")
-          const nextWaypoint = this.waypoints[this.nextWaypointIndex]
+          drawnPath[nextWaypointIndex].Destroy()
+          nextWaypointIndex++
+          drawnPath[nextWaypointIndex].BrickColor = new BrickColor("Lime green")
+          const nextWaypoint = waypoints[nextWaypointIndex]
           if (!nextWaypoint) return this.clearTargetPath(drawnPath, humanoid)
           humanoid.MoveTo(nextWaypoint.Position)
         } else {
@@ -96,8 +86,8 @@ export class AIController extends BaseComponent implements OnStart {
       })
     }
 
-    if (this.waypoints.size() === 0) return this.clearTargetPath(drawnPath, humanoid)
-    const nextWaypoint = this.waypoints[this.nextWaypointIndex]
+    if (waypoints.size() === 0) return this.clearTargetPath(drawnPath, humanoid)
+    const nextWaypoint = waypoints[nextWaypointIndex]
     if (!nextWaypoint) return this.clearTargetPath(drawnPath, humanoid)
     humanoid.MoveTo(nextWaypoint.Position)
   }
@@ -110,7 +100,7 @@ export class AIController extends BaseComponent implements OnStart {
     this.reachedConnection?.Disconnect()
     this.blockedConnection = undefined
     this.reachedConnection = undefined
-    this.nextWaypointIndex = 1
+    this.isPathing = false
   }
 
   drawPath(waypoints: PathWaypoint[]) {
