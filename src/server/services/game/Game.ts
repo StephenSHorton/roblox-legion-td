@@ -3,7 +3,7 @@ import {Dependency, OnStart, Service } from "@flamework/core";
 import { AIController } from "server/components/AI/AIController";
 import { shuffle } from "server/utility";
 import { CollisionManager } from "../CollisionManager";
-import { initTeamLanes, TeamLanes } from "./Game.types.";
+import { initTeamLanes, TeamLanes } from "./Game.types";
 
 const components = Dependency<Components>();
 
