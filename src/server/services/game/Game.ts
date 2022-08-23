@@ -10,10 +10,8 @@ const components = Dependency<Components>();
 const PlayerService = game.GetService("Players")
 const ServerStorage = game.GetService("ServerStorage")
 
-const CreepsFolder = ServerStorage.WaitForChild("Creeps") as Folder
-const Dummy = CreepsFolder.WaitForChild("Dummy") as Model
-const Map = game.Workspace.WaitForChild("Map") as Model
-const TEMPWAYPOINTS = Map.WaitForChild("Waypoints").GetChildren() as Part[]
+const Dummy = ServerStorage.Creeps.Dummy
+const TEMPWAYPOINTS = game.Workspace.Map.Waypoints
 
 const MIN_PLAYERS = 1
 
@@ -76,26 +74,33 @@ export class Game implements OnStart {
     }
   }
 
-  setupPlayers() {
-    const players = PlayerService.GetPlayers()
-    shuffle(players).forEach((player) => {
-      this.assignPlayerToTeam(player)
+  setupPlayers() { //! having trouble with this function.... same player set for all lanes... not teleporting
+    const players = shuffle(PlayerService.GetPlayers())
+    players.forEach((player, index) => {
+      this.assignPlayerToTeam(player, index)
     })
-    print(this.lanes)
-  }
 
-  assignPlayerToTeam(player: Player) {
-    //! broken, assigns me to every lane
-    let foundTeam = false
-    for (const [_, v] of pairs(this.lanes)) {
-      for (const [_, v2] of pairs(v)) {
-        if (!v2.player) {
-          v2.player = player
-          foundTeam = true
-          break
+    //teleport players to spawn points
+    for (const [, v] of pairs(this.lanes)) {
+      for (const [lane, v2] of pairs(v)) {
+        const player = v2.player
+        if (player) {
+          const character = player.Character || player.CharacterAdded.Wait()[0]
+          const primaryPart = character.PrimaryPart
+          print("preparing player " + character.Name)
+          if (primaryPart) primaryPart.CFrame = new CFrame(game.Workspace.Map.PlayerAreas[lane].Position)
+          print("teleported")
         }
       }
-      if (foundTeam) break
     }
+  }
+
+  assignPlayerToTeam(player: Player, index: number) {
+    let side: keyof typeof this.lanes = "east"
+    if (index <= 3) side = 'west' //first 4 players are on the west side
+    if (index === 0) this.lanes[side].NorthWest.player = player
+    else if (index === 1) this.lanes[side].SouthWest.player = player
+    else if (index === 2) this.lanes[side].NorthEast.player = player
+    else if (index === 3) this.lanes[side].SouthEast.player = player
   }
 }
