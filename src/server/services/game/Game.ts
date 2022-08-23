@@ -34,7 +34,7 @@ export class Game implements OnStart {
 
   private gameStarted = false  
   private playerCount = 0
-  private lanes: TeamLanes = initTeamLanes
+  private lanes: TeamLanes = {...initTeamLanes}
 
   onStart() {
     PlayerService.PlayerAdded.Connect(() => {
