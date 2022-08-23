@@ -95,7 +95,7 @@ export class Game implements OnStart {
     }
   }
 
-  assignPlayerToTeam(player: Player, index: number) {
+  assignPlayerToTeam(player: Player, index: number) { //! refactor this function because the problem was the state was not a copy
     let side: keyof typeof this.lanes = "east"
     if (index <= 3) side = 'west' //first 4 players are on the west side
     if (index === 0) this.lanes[side].NorthWest.player = player
