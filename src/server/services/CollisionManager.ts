@@ -1,22 +1,20 @@
-import { OnStart, Service } from "@flamework/core"
+import { OnStart, Service } from "@flamework/core";
 
-const PhysicsService = game.GetService("PhysicsService")
+const PhysicsService = game.GetService("PhysicsService");
 
 const group = {
-  AI: 'AI'
-}
+	NPC: "NPC",
+};
 
-PhysicsService.CreateCollisionGroup(group.AI)
-PhysicsService.CollisionGroupSetCollidable(group.AI, group.AI, false)
+PhysicsService.CreateCollisionGroup(group.NPC);
+PhysicsService.CollisionGroupSetCollidable(group.NPC, group.NPC, false);
 
 @Service()
 export class CollisionManager {
-  
-  addAI(ai: Model) {
-    const parts = ai.GetChildren().filter((part): part is BasePart => part.IsA('BasePart'))
-    parts.forEach(part => {
-      PhysicsService.SetPartCollisionGroup(part, group.AI)
-    })
-  }
-    
+	addNPC(npc: Model) {
+		const parts = npc.GetChildren().filter((part): part is BasePart => part.IsA("BasePart"));
+		parts.forEach((part) => {
+			PhysicsService.SetPartCollisionGroup(part, group.NPC);
+		});
+	}
 }

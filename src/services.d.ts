@@ -1,4 +1,4 @@
-export {}
+export {};
 declare global {
 	interface Workspace extends Model {
 		Map: Model & {
@@ -14,6 +14,7 @@ declare global {
 				Center: Part;
 				West: Part;
 				NorthWest: Part;
+				South: Part;
 				East: Part;
 				NorthEast: Part;
 			};
@@ -40,7 +41,7 @@ declare global {
 			Texture: Texture;
 		};
 	}
-	
+
 	interface ServerStorage extends Instance {
 		TagList: Folder & {
 			AI: Configuration;
@@ -321,5 +322,4 @@ declare global {
 			};
 		};
 	}
-	
 }

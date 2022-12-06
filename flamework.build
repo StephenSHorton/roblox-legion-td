@@ -1,0 +1,15 @@
+{
+	"version": 1,
+	"flameworkVersion": "1.0.0-beta.14",
+	"identifiers": {
+		"roblox-legion-td:out/server/components/AI/AIController@AIController": "server/components/AI/AIController@AIController",
+		"roblox-legion-td:out/server/components/map/Map@Map": "server/components/map/Map@Map",
+		"roblox-legion-td:out/server/services/CollisionManager@CollisionManager": "server/services/CollisionManager@CollisionManager",
+		"roblox-legion-td:out/server/services/game/Game@Game": "server/services/game/Game@Game",
+		"roblox-legion-td:out/shared/network@GlobalEvents": "shared/network@GlobalEvents",
+		"roblox-legion-td:out/shared/network@GlobalFunctions": "shared/network@GlobalFunctions",
+		"roblox-legion-td:out/server/components/AI/NPC_Controller@AIController": "server/components/AI/NPC_Controller@AIController",
+		"roblox-legion-td:out/server/components/NPC/Attacker/Controller@AIController": "server/components/NPC/Attacker/Controller@AIController",
+		"roblox-legion-td:out/server/components/NPC/Attacker/Controller@Controller": "server/components/NPC/Attacker/Controller@Controller"
+	}
+}
